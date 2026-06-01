@@ -16,11 +16,13 @@ export default defineManifest({
 
   permissions: [
     'storage',
-    'activeTab'
+    'activeTab',
+    'cookies'
   ],
 
   host_permissions: [
-    'https://note.com/*'
+    'https://note.com/*',
+    'http://localhost/*'
   ],
 
   action: {
