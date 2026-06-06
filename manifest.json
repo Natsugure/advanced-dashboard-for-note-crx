@@ -22,6 +22,9 @@
       "run_at": "document_idle"
     }
   ],
+  "host_permissions": [
+    "https://note.com/*"
+  ],
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
