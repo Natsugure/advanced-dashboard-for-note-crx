@@ -1,7 +1,16 @@
+import { Button } from "@mantine/core";
+import { useUpdateStats } from "./hooks/useUpdateStats";
+
 export function MainPage() {
+  const { updateStats } = useUpdateStats()
+
+  const onClickFetchStats = () => {
+    updateStats()
+  }
+
   return (
     <>
-      <h2>メインページ</h2>
+      <Button onClick={onClickFetchStats}>統計を取得</Button>
     </>
   )
 }
