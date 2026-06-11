@@ -1,6 +1,6 @@
 body {
-  width: 600px;
-  height: 600px;
+  width: 450px;
+  height: 450px;
   background: #fff;
   color: #111;
   font-size: 16px;
@@ -10,4 +10,8 @@ body {
 #content {
   padding: 1rem;
   flex: 1;
+}
+
+.mantine-Button-root[data-variant="filled"] {
+  color: #222 !important;
 }

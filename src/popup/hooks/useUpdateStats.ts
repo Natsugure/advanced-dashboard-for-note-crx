@@ -15,51 +15,68 @@ interface UpdateStatsRequest {
   body: UpdateStatsRequestBody
 }
 
+type Result = "success" | "no_update"
+
+/** API処理の手番。 */
+const phases = {
+  stats:    1,
+  articles: 2,
+  post:     3,
+  total:    3,
+
+  start(phase: number) { return (phase - 1) / this.total * 100 },
+  end(phase: number)   { return phase / this.total * 100 },
+  range(phase: number) { return this.end(phase) - this.start(phase) },
+} as const
+
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 export function useUpdateStats() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
 
-  const fetchedAt = new Date()
   const api = useApiClient()
   const { fetchUser } = useUser()
 
-  const updateStats = async () => {
+  const updateStats = async (): Promise<Result> => {
+    const fetchedAt = new Date()
+    setProgress(0)
     setIsProcessing(true)
 
     const statsResponse: NoteStatsResponse = []
     const articlesResponse: NoteArticlesResponse = []
 
     try {
-      const currentUser = await fetchCurrentUser()
+      const ad4nUser = await fetchUser()
+      if (!ad4nUser) {
+        throw new Error("user not found")
+      }
+      const noteSessionUser = await fetchCurrentUser()
 
-      const articleCount = currentUser.note_count
+      if (ad4nUser.noteUserId !== noteSessionUser.id) {
+        throw new Error("user mismatch")
+      }
+
+      const articleCount = noteSessionUser.note_count
       const statsPerPage = 10
       const statsTotalPage = Math.ceil(articleCount / statsPerPage)
-      /** Stats取得時の1ページあたりの進捗割合。*/
-      const statsProgressPerPage = statsTotalPage > 0 ? 50 / statsTotalPage : 50
 
       for (let i = 1; i <= statsTotalPage; i++) {
         console.log(`fetchStats: Page ${i}`)
         const res = await fetchStats(i)
 
         if (i === 1) {
-          const user = await fetchUser()
-          if (!user) {
-            throw new Error("user not found")
-          }
-
           // 前回取得時から更新されていなかったら処理を抜ける
-          if (dayjs(res.last_calculate_at) <= dayjs(user.lastNoteCalculatedAt)) {
+          if (dayjs(res.last_calculate_at) <= dayjs(ad4nUser.lastNoteCalculatedAt)) {
             console.log("stats not updated")
-            return
+            return "no_update"
           }
         }
 
         statsResponse.push(...res.note_stats)
-        // 割り切れない値で50を超えないようにする
-        setProgress(Math.min(i * statsProgressPerPage, 50))
+
+        setProgress(calculateProgress(phases.stats, statsTotalPage, i))
+
         if (i < statsTotalPage) await sleep(500)
       }
       
@@ -67,18 +84,15 @@ export function useUpdateStats() {
       // そのため、note_listの応答に含まれるtotalCountの値とisLastPageのフラグを使って制御する。
       const articlePerPage = 16
       let page = 1
-      let articleProgressPerPage = 0
+      let articleTotalPages = 0
       while (true) {
         const res = await fetchArticles(page)
         articlesResponse.push(...res.notes)
 
         if (page === 1) {
-          const totalPages = Math.ceil(res.totalCount / articlePerPage)
-          articleProgressPerPage = totalPages > 0 ? 50 / totalPages : 50
+          articleTotalPages = Math.ceil(res.totalCount / articlePerPage)
         }
-
-        // stats終了分の50を常に足す。そして、割り切れない値で100を超えないようにする。
-        setProgress(Math.min(page * articleProgressPerPage + 50, 100))
+        setProgress(calculateProgress(phases.articles, articleTotalPages, page))
 
         if (res.isLastPage) break
         page++
@@ -109,9 +123,8 @@ export function useUpdateStats() {
         }]
       })
 
-      // TODO: API送信部分も進捗率計算に含める
-      for (const item of requestBody) {
-        console.log(`updateStats: ${item.params.noteArticleId}, publishAt: ${item.body.article.publishedAt}`)
+      for (const [index, item] of requestBody.entries()) {
+        console.log(`updateStats: 【${index + 1}/${requestBody.length}】${item.params.noteArticleId}`)
         await api.POST("/api/me/articles/{noteArticleId}/stats", {
           params: {
             path: {
@@ -120,12 +133,32 @@ export function useUpdateStats() {
           },
           body: item.body
         })
+
+        setProgress(calculateProgress(phases.post, requestBody.length, index + 1))
       }
+
+      return "success"
     } catch (e) {
-      console.error(e)
+      throw e instanceof Error ? e : new Error(String(e))
     } finally {
       setIsProcessing(false)
     }
   }
-  return { updateStats, isProcessing, progress }
+
+  return { 
+    updateStats,
+    isProcessing, 
+    progress
+  }
+}
+
+/** 進捗率の計算を行う。
+ * 
+ * phasesのステージ数で全体のうちそのステージが占める割合を考慮した計算を行う。
+ */
+function calculateProgress(phase: number, totalPages: number, page: number) {
+  return Math.min(
+    phases.start(phase) + page * (phases.range(phase) / totalPages),
+    phases.end(phase)
+  )
 }
