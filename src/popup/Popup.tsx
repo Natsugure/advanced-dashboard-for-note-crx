@@ -1,14 +1,13 @@
 import { ClerkProvider, Show, useAuth } from '@clerk/chrome-extension'
-import { useState } from 'react'
+import { useContext } from 'react'
 import { LoginPage } from './LoginPage'
 import { MainPage } from './MainPage'
 import { SettingsPage } from './SettingsPage'
 import { Header } from './components/Header'
-
-type Page = "main" | "settings"
+import { PageContext } from './contexts/pageContext'
 
 function PopupContent() {
-  const [page, setPage] = useState<Page>("main")
+  const { page } = useContext(PageContext)
   const { isLoaded } = useAuth()
 
   if (!isLoaded) {
