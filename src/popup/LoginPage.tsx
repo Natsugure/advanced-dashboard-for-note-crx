@@ -3,7 +3,7 @@ import { Button, Container, Flex, Text, Title } from "@mantine/core";
 
 export function LoginPage() {
   const onClickSignUp = () => {
-    chrome.tabs.create({ url: `${process.env.VITE_WEB_APP_URL}/signup`})
+    void chrome.tabs.create({ url: `${process.env.VITE_WEB_APP_URL}/signup`})
   }
 
   return (
