@@ -5,6 +5,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { MantineProvider, createTheme, MantineColorsTuple } from '@mantine/core';
 import { Popup } from './Popup';
+import { PageProvider } from './providers/PageProvider';
 
 const myColor: MantineColorsTuple = [
   '#e6fdf7',
@@ -32,7 +33,9 @@ if (root) {
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
       <MantineProvider theme={theme}>
-        <Popup />
+        <PageProvider>
+          <Popup />
+        </PageProvider>
       </MantineProvider>
     </React.StrictMode>
   );
