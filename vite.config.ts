@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { crx } from '@crxjs/vite-plugin'
 import react from '@vitejs/plugin-react'
+import babel from 'vite-plugin-babel';
 import { defineConfig } from 'vite'
 import env from 'vite-plugin-env-compatible'
 import zip from 'vite-plugin-zip-pack'
@@ -16,6 +17,11 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    babel({
+      babelConfig: {
+        plugins: ['babel-plugin-react-compiler'],
+      },
+    }),
     tailwindcss(),
     env({ prefix: "VITE", mountedPath: "process.env" }),
     crx({ manifest }),
