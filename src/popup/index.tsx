@@ -6,6 +6,8 @@ import ReactDOM from 'react-dom/client';
 import { MantineProvider, createTheme, MantineColorsTuple } from '@mantine/core';
 import { Popup } from './Popup';
 import { PageProvider } from './providers/PageProvider';
+import { UserProvider } from './providers/UserProvider';
+import { ClerkProvider } from '@clerk/chrome-extension';
 
 const myColor: MantineColorsTuple = [
   '#e6fdf7',
@@ -28,15 +30,25 @@ const theme = createTheme({
   primaryShade: 7,
 });
 
+const PUBLISHABLE_KEY = process.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Please add the VITE_PUBLIC_CLERK_PUBLISHABLE_KEY to the .env.development file')
+} 
+
 const root = document.getElementById('root');
 if (root) {
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
-      <MantineProvider theme={theme}>
-        <PageProvider>
-          <Popup />
-        </PageProvider>
-      </MantineProvider>
+      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
+        <MantineProvider theme={theme}>
+          <UserProvider>
+            <PageProvider>
+              <Popup />
+            </PageProvider>
+          </UserProvider>
+        </MantineProvider>
+      </ClerkProvider>
     </React.StrictMode>
   );
 }

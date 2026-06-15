@@ -12,3 +12,6 @@ export type ArticleWithStats = Article & { stats: Stat[] }
 export type UpdateStatsRequestBody =  NonNullable<
     paths["/api/me/articles/{noteArticleId}/stats"]["post"]["requestBody"]
   >["content"]["application/json"]
+
+export type User = 
+  paths["/api/me/user"]["get"]["responses"][200]["content"]["application/json"]

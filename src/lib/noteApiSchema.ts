@@ -32,9 +32,11 @@ export const CurrentUserSchema = z.object({
   data: z.object({
     id: z.int().pipe(z.coerce.number()),
     nickname: z.string(),
+    urlname: z.string(),
     note_count: z.int().pipe(z.coerce.number()),
   })
 })
 
 export type Articles = z.infer<typeof ArticlesSchema>["data"]
 export type Stats = z.infer<typeof StatsSchema>["data"]
+export type NoteCurrentUser = z.infer<typeof CurrentUserSchema>["data"]

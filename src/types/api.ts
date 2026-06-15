@@ -25,6 +25,8 @@ export interface paths {
                     "application/json": {
                         /** @example 12345678 */
                         noteUserId: number;
+                        noteNickName: string;
+                        noteUrlName: string;
                     };
                 };
             };
@@ -269,6 +271,7 @@ export interface paths {
                         "application/json": {
                             article: {
                                 title: string;
+                                key: string;
                                 /** Format: date-time */
                                 publishedAt: string;
                             };
@@ -351,6 +354,7 @@ export interface paths {
                         "application/json": {
                             article: {
                                 title: string;
+                                key: string;
                                 /** Format: date-time */
                                 publishedAt: string;
                             };
@@ -402,7 +406,10 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    from?: string;
+                    to?: string;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -419,6 +426,7 @@ export interface paths {
                             data: {
                                 article: {
                                     title: string;
+                                    key: string;
                                     /** Format: date-time */
                                     publishedAt: string;
                                 };
@@ -430,6 +438,64 @@ export interface paths {
                                     fetchedAt: string;
                                 }[];
                             }[];
+                        };
+                    };
+                };
+                /** @description リクエストが不正です */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description 認証に失敗しました */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description サーバーエラーが発生しました */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/me/stats/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description 統計の取得に成功しました */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data: components["schemas"]["DailyStats"][];
                         };
                     };
                 };
@@ -476,11 +542,20 @@ export interface components {
             id: string;
             /** @example 12345678 */
             noteUserId: number;
+            noteNickName: string;
+            noteUrlName: string;
             /**
              * Format: date-time
              * @example 2023-01-01T00:00:00.000Z
              */
             lastNoteCalculatedAt: string;
+        };
+        DailyStats: {
+            /** @example 2023-01-01 */
+            date: string;
+            totalReads: number;
+            totalLikes: number;
+            totalComments: number;
         };
     };
     responses: never;

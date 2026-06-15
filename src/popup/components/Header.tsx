@@ -38,9 +38,11 @@ export function Header() {
             <Menu.Item leftSection={<MdHelpOutline />}>
               使い方
             </Menu.Item>
+            {/** 
             <Menu.Item leftSection={<MdSettings />} onClick={onClickSettings}>
               設定
             </Menu.Item>
+            */}
 
             <Menu.Divider />
             <SignOutButton>

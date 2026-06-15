@@ -12,5 +12,35 @@ export function useUser() {
     return data
   }
 
-  return { fetchUser }
+  const createUser = async (id: number, nickname: string, urlname: string) => {
+    const { data, error } = await api.POST("/api/users", {
+      body: {
+        noteUserId: id,
+        noteNickName: nickname,
+        noteUrlName: urlname
+      }
+    })
+
+    if (error) {
+      throw new Error(error)
+    }
+
+    return data
+  }
+
+  const updateUser = async (lastNoteCalculatedAt: string) => {
+    const { data, error } = await api.PUT("/api/me/user", {
+      body: {
+        lastNoteCalculatedAt
+      }
+    })
+
+    if (error) {
+      throw new Error(error)
+    }
+
+    return data
+  }
+
+  return { fetchUser, createUser, updateUser }
 }

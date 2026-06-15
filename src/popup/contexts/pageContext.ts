@@ -1,6 +1,6 @@
 import { createContext } from "react"
 
-export type Page = "main" | "settings"
+export type Page = "main" | "settings" | "initialSettings"
 
 interface Context {
   page: Page

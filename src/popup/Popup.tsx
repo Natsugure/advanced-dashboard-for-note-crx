@@ -1,18 +1,42 @@
-import { ClerkProvider, Show, useAuth } from '@clerk/chrome-extension'
-import { useContext } from 'react'
-import { LoginPage } from './LoginPage'
-import { MainPage } from './MainPage'
-import { SettingsPage } from './SettingsPage'
-import { Header } from './components/Header'
+import { Show, useAuth } from '@clerk/chrome-extension'
+import { useContext, useEffect, useState } from 'react'
+import { LoginPage } from './pages/LoginPage'
+import { MainPage } from './pages/MainPage'
+import { InitialSettingsPage } from './pages/InitialSettingsPage'
+import { SettingsPage } from './pages/SettingsPage'
 import { PageContext } from './contexts/pageContext'
+import { UserContext } from './contexts/userContext'
+import { useUser } from './hooks/useUsers'
+import { ErrorOverlay } from './components/ErrorOverlay'
 
-function PopupContent() {
-  const { page } = useContext(PageContext)
-  const { isLoaded } = useAuth()
+export function Popup() {
+  const [error, setError] = useState<string | undefined>(undefined)
+  const { page, setPage } = useContext(PageContext)
+  const { setUser } = useContext(UserContext)
+  const { isLoaded, isSignedIn } = useAuth()
+  const { fetchUser } = useUser()
 
-  if (!isLoaded) {
-    return <div>Loading...</div>
-  }
+  useEffect(() => {
+    const setUserContext = async () => {
+      if (isLoaded && isSignedIn) {
+        try {
+          const res = await fetchUser()
+          setUser(res)
+
+          if (!res) {
+            setPage("initialSettings")
+          } else {
+            setPage("main")
+          }
+        } catch(e) {
+          console.error(e)
+          setError("ユーザー情報の取得に失敗しました")
+        }
+      }
+    }
+
+    void setUserContext()
+  }, [isLoaded, isSignedIn, fetchUser, setPage, setUser])
 
   return (
     <>
@@ -20,26 +44,16 @@ function PopupContent() {
         <LoginPage />
       </Show>
       <Show when={"signed-in"}>
-        <Header />
-        {page === "main" && <MainPage />}
-        {page === "settings" && <SettingsPage />}
+        {error ? (
+          <ErrorOverlay message={error} />
+        ) : (
+          <>
+            {page === "initialSettings" && <InitialSettingsPage />}
+            {page === "main" && <MainPage />}
+            {page === "settings" && <SettingsPage />}
+          </>
+        )}
       </Show>
-    </>
-  )
-}
-
-export function Popup() {
-  const PUBLISHABLE_KEY = process.env.VITE_CLERK_PUBLISHABLE_KEY
-
-  if (!PUBLISHABLE_KEY) {
-    throw new Error('Please add the VITE_PUBLIC_CLERK_PUBLISHABLE_KEY to the .env.development file')
-  } 
-
-  return (
-    <>
-      <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
-        <PopupContent />
-      </ClerkProvider>
     </>
   )
 }

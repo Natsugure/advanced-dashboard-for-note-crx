@@ -9,17 +9,21 @@ import {
   Progress,
   Space,
   Stack,
+  Table,
   Text,
 } from "@mantine/core";
 import { useUpdateStats } from "../hooks/useUpdateStats";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { IoOpenOutline } from "react-icons/io5";
 import { TfiStatsUp } from "react-icons/tfi";
+import { Header } from "../components/Header";
+import { UserContext } from "../contexts/userContext";
 
 export function MainPage() {
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogText, setDialogText] = useState("");
+  const { user } = useContext(UserContext);
   const [opened, { toggle, close }] = useDisclosure();
   const { updateStats, isProcessing, progress } = useUpdateStats();
 
@@ -80,19 +84,32 @@ export function MainPage() {
       >
         <Text>{dialogText}</Text>
       </Dialog>
+      <Header />
       <Stack p="md" gap="sm">
-        <Card shadow="sm" p="sm" radius="md" orientation="horizontal">
+        <Card shadow="sm" p="sm" radius="md">
           <Card.Section inheritPadding px="xs" withBorder>
             <Stack>
-              <Text fw={500} size="sm" c="dimmed">ユーザー情報</Text>
+              <Text fw={500} size="sm" c="dimmed" mt="xs" mb="xs">取得対象noteアカウント</Text>
             </Stack>
           </Card.Section>
 
-          <Card.Section inheritPadding px="xs" withBorder>
-            <Text>いいいいい</Text>
+          <Card.Section inheritPadding px="0px" withBorder>
+            <Table variant="vertical" layout="fixed" verticalSpacing="sm">
+              <Table.Tbody>
+                <Table.Tr>
+                  <Table.Th w={120}>クリエイター名</Table.Th>
+                  <Table.Td>{user?.noteNickName}</Table.Td>
+                </Table.Tr>
+
+                <Table.Tr>
+                  <Table.Th w={120}>note ID</Table.Th>
+                  <Table.Td>{user?.noteUrlName}</Table.Td>
+                </Table.Tr>
+              </Table.Tbody>
+            </Table>
           </Card.Section>
         </Card>
-        <Button leftSection={<TfiStatsUp />} onClick={onClickFetchStats}>
+        <Button mt="md" leftSection={<TfiStatsUp />} onClick={onClickFetchStats}>
           統計を取得
         </Button>
         <Button leftSection={<IoOpenOutline />} onClick={onClickOpenApp}>
