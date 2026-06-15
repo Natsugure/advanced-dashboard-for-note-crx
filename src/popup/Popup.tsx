@@ -1,6 +1,5 @@
 import { Show, useAuth } from '@clerk/chrome-extension'
 import { useContext, useEffect, useState } from 'react'
-import { LoginPage } from './pages/LoginPage'
 import { MainPage } from './pages/MainPage'
 import { InitialSettingsPage } from './pages/InitialSettingsPage'
 import { SettingsPage } from './pages/SettingsPage'
@@ -8,6 +7,7 @@ import { PageContext } from './contexts/pageContext'
 import { UserContext } from './contexts/userContext'
 import { useUser } from './hooks/useUsers'
 import { ErrorOverlay } from './components/ErrorOverlay'
+import { OnboardingPage } from './pages/OnboardingPage'
 
 export function Popup() {
   const [error, setError] = useState<string | undefined>(undefined)
@@ -36,12 +36,12 @@ export function Popup() {
     }
 
     void setUserContext()
-  }, [isLoaded, isSignedIn, fetchUser, setPage, setUser])
+  }, [isLoaded, isSignedIn, setPage, setUser])
 
   return (
     <>
       <Show when={"signed-out"}>
-        <LoginPage />
+        <OnboardingPage />
       </Show>
       <Show when={"signed-in"}>
         {error ? (
