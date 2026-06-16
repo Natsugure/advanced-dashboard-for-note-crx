@@ -12,13 +12,15 @@ import { OnboardingPage } from './pages/OnboardingPage'
 export function Popup() {
   const [error, setError] = useState<string | undefined>(undefined)
   const { page, setPage } = useContext(PageContext)
-  const { setUser } = useContext(UserContext)
+  const { setUser, setIsLoading } = useContext(UserContext)
   const { isLoaded, isSignedIn } = useAuth()
   const { fetchUser } = useUser()
 
   useEffect(() => {
     const setUserContext = async () => {
       if (isLoaded && isSignedIn) {
+        setIsLoading(true)
+
         try {
           const res = await fetchUser()
           setUser(res)
@@ -31,6 +33,8 @@ export function Popup() {
         } catch(e) {
           console.error(e)
           setError("ユーザー情報の取得に失敗しました")
+        } finally {
+          setIsLoading(false)
         }
       }
     }

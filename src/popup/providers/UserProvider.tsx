@@ -8,9 +8,10 @@ interface Props {
 
 export function UserProvider({ children }: Props) {
   const [user, setUser] = useState<User | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState(false)
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, isLoading, setIsLoading }}>
       {children}
     </UserContext.Provider>
   )

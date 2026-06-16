@@ -23,7 +23,7 @@ import { UserContext } from "../contexts/userContext";
 export function MainPage() {
   const [dialogTitle, setDialogTitle] = useState("");
   const [dialogText, setDialogText] = useState("");
-  const { user } = useContext(UserContext);
+  const { user, isLoading } = useContext(UserContext);
   const [opened, { toggle, close }] = useDisclosure();
   const { updateStats, isProcessing, progress } = useUpdateStats();
 
@@ -98,12 +98,12 @@ export function MainPage() {
               <Table.Tbody>
                 <Table.Tr>
                   <Table.Th w={120}>クリエイター名</Table.Th>
-                  <Table.Td>{user?.noteNickName}</Table.Td>
+                  <Table.Td>{isLoading ? "読み込み中…" : user?.noteNickName}</Table.Td>
                 </Table.Tr>
 
                 <Table.Tr>
                   <Table.Th w={120}>note ID</Table.Th>
-                  <Table.Td>{user?.noteUrlName}</Table.Td>
+                  <Table.Td>{isLoading ? "読み込み中…" : user?.noteUrlName}</Table.Td>
                 </Table.Tr>
               </Table.Tbody>
             </Table>
