@@ -4,7 +4,14 @@ import { useUser } from "./useUsers"
 import { fetchArticles, fetchCurrentUser, fetchStats } from "@/lib/noteApi"
 import type { Articles, Stats } from "@/lib/noteApiSchema"
 import type { UpdateStatsRequestBody } from "@/types"
-import dayjs from "dayjs"
+import dayjs, { Dayjs } from "dayjs"
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(customParseFormat);
 
 type NoteStatsResponse = Stats["note_stats"]
 type NoteArticlesResponse = Articles["notes"]
@@ -15,7 +22,7 @@ interface UpdateStatsRequest {
   body: UpdateStatsRequestBody
 }
 
-type Result = "success" | "no_update"
+type Result = "success" | "no_update" | "no_article"
 
 /** API処理の手番。 */
 const phases = {
@@ -45,6 +52,7 @@ export function useUpdateStats() {
 
     const statsResponse: NoteStatsResponse = []
     const articlesResponse: NoteArticlesResponse = []
+    let lastCalculatedAt: Dayjs | undefined = undefined
 
     try {
       const ad4nUser = await fetchUser()
@@ -58,6 +66,11 @@ export function useUpdateStats() {
       }
 
       const articleCount = noteSessionUser.note_count
+
+      if (articleCount === 0) {
+        return "no_article"
+      }
+
       const statsPerPage = 10
       const statsTotalPage = Math.ceil(articleCount / statsPerPage)
 
@@ -66,8 +79,9 @@ export function useUpdateStats() {
         const res = await fetchStats(i)
 
         if (i === 1) {
+          lastCalculatedAt = dayjs.tz(res.last_calculate_at, "Asia/Tokyo").utc()
           // 前回取得時から更新されていなかったら処理を抜ける
-          if (dayjs(res.last_calculate_at) <= dayjs(ad4nUser.lastNoteCalculatedAt)) {
+          if (lastCalculatedAt <= dayjs(ad4nUser.lastNoteCalculatedAt)) {
             console.log("stats not updated")
             return "no_update"
           }
@@ -136,6 +150,12 @@ export function useUpdateStats() {
 
         setProgress(calculateProgress(phases.post, requestBody.length, index + 1))
       }
+
+      await api.PUT("/api/me/user", {
+        body: {
+          lastNoteCalculatedAt: lastCalculatedAt!.toISOString()
+        }
+      })
 
       return "success"
     } catch (e) {
