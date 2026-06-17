@@ -1,13 +1,12 @@
 import {
-  Box,
   Button,
   Card,
   Container,
   Dialog,
   Flex,
+  Loader,
   LoadingOverlay,
   Progress,
-  Space,
   Stack,
   Table,
   Text,
@@ -63,15 +62,15 @@ export function MainPage() {
         visible={isProcessing}
         loaderProps={{
           children: (
-            <Container>
+            <Container w={380} p="md" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)', borderRadius: 8 }}>
               <Flex mb="xs" justify="space-between">
-                <Text>更新中…</Text>
-                <Space />
-                <Text>{progress.toFixed(1)}%</Text>
+                <Flex align="center">
+                  <Loader size={20} />;
+                  <Text mx={4} c="white">取得中</Text>
+                </Flex>
+                <Text c="white">{progress.toFixed(1)}%</Text>
               </Flex>
-              <Box w={500}>
-                <Progress value={progress} />
-              </Box>
+              <Progress value={progress} />
             </Container>
           ),
         }}
