@@ -46,7 +46,6 @@ export function useUpdateStats() {
   const { fetchUser } = useUser()
 
   const updateStats = async (): Promise<Result> => {
-    const fetchedAt = new Date()
     setProgress(0)
     setIsProcessing(true)
 
@@ -131,7 +130,7 @@ export function useUpdateStats() {
               readCount: item.read_count,
               likeCount: item.like_count,
               commentCount: item.comment_count,
-              fetchedAt: fetchedAt.toISOString()
+              fetchedAt: lastCalculatedAt!.toISOString()
             }
           }
         }]
