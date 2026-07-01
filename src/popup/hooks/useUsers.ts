@@ -4,7 +4,7 @@ export function useUser() {
   const api = useApiClient()
 
   const fetchUser = async () => {
-    const { data, error } = await api.GET("/api/me/user")
+    const { data, error } = await api.GET("/me/user")
     if (error) {
       throw new Error(error)
     }
@@ -13,7 +13,7 @@ export function useUser() {
   }
 
   const createUser = async (id: number, nickname: string, urlname: string) => {
-    const { data, error } = await api.POST("/api/users", {
+    const { data, error } = await api.POST("/users", {
       body: {
         noteUserId: id,
         noteNickName: nickname,
@@ -29,7 +29,7 @@ export function useUser() {
   }
 
   const updateUser = async (lastNoteCalculatedAt: string) => {
-    const { data, error } = await api.PUT("/api/me/user", {
+    const { data, error } = await api.PUT("/me/user", {
       body: {
         lastNoteCalculatedAt
       }

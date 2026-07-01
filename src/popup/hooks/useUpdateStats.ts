@@ -138,7 +138,7 @@ export function useUpdateStats() {
 
       for (const [index, item] of requestBody.entries()) {
         console.log(`updateStats: 【${index + 1}/${requestBody.length}】${item.params.noteArticleId}`)
-        await api.POST("/api/me/articles/{noteArticleId}/stats", {
+        await api.POST("/me/articles/{noteArticleId}/stats", {
           params: {
             path: {
               noteArticleId: item.params.noteArticleId
@@ -150,7 +150,7 @@ export function useUpdateStats() {
         setProgress(calculateProgress(phases.post, requestBody.length, index + 1))
       }
 
-      await api.PUT("/api/me/user", {
+      await api.PUT("/me/user", {
         body: {
           lastNoteCalculatedAt: lastCalculatedAt!.toISOString()
         }

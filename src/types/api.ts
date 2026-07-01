@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/users": {
+    "/users": {
         parameters: {
             query?: never;
             header?: never;
@@ -69,7 +69,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/user": {
+    "/me/user": {
         parameters: {
             query?: never;
             header?: never;
@@ -175,7 +175,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/articles": {
+    "/me/articles": {
         parameters: {
             query?: never;
             header?: never;
@@ -244,7 +244,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/articles/{noteArticleId}/stats": {
+    "/me/articles/{noteArticleId}/stats": {
         parameters: {
             query?: never;
             header?: never;
@@ -364,7 +364,7 @@ export interface paths {
                                 commentCount: number;
                                 /** Format: date-time */
                                 fetchedAt: string;
-                            }[];
+                            };
                         };
                     };
                 };
@@ -397,7 +397,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/stats": {
+    "/me/stats": {
         parameters: {
             query?: never;
             header?: never;
@@ -472,7 +472,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/me/stats/daily": {
+    "/me/stats/daily": {
         parameters: {
             query?: never;
             header?: never;
