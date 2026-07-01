@@ -1,17 +1,9 @@
 import { ActionIcon, Flex, Image, Menu, Title } from "@mantine/core";
 import { PiUserCircleLight } from "react-icons/pi";
-import { MdHelpOutline, MdSettings, MdLogout } from "react-icons/md";
-import { useContext } from "react";
-import { PageContext } from "../contexts/pageContext";
+import { MdHelpOutline, /*MdSettings,*/ MdLogout } from "react-icons/md";
 import { SignOutButton } from "@clerk/chrome-extension";
 
 export function Header() {
-  const { setPage } = useContext(PageContext)
-
-  const onClickSettings = () => {
-    setPage("settings")
-  }
-
   return (
     <>
       <Flex
@@ -35,11 +27,11 @@ export function Header() {
           </Menu.Target>
 
           <Menu.Dropdown>
-            <Menu.Item leftSection={<MdHelpOutline />}>
+            <Menu.Item leftSection={<MdHelpOutline />} onClick={() => chrome.tabs.create({ url: `${process.env.VITE_WEB_APP_URL}/help` })}>
               使い方
             </Menu.Item>
             {/** 
-            <Menu.Item leftSection={<MdSettings />} onClick={onClickSettings}>
+            <Menu.Item leftSection={<MdSettings />} onClick={() => setPage("settings")}}>
               設定
             </Menu.Item>
             */}
